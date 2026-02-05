@@ -7,10 +7,8 @@ const nextConfig: NextConfig = {
   // Netlify compatibility
   output: process.env.NETLIFY ? 'standalone' : undefined,
   
-  // Optimize for serverless
-  experimental: {
-    serverComponentsExternalPackages: ['mongoose'],
-  },
+  // Optimize for serverless (moved from experimental)
+  serverExternalPackages: ['mongoose'],
 };
 
 export default nextConfig;
