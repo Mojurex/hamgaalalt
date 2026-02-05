@@ -37,7 +37,8 @@ export interface Report {
   category: ReportCategory;
   severity: SeverityLevel;
   description: string;
-  reportedBy?: string;
+  reporterId?: string | { _id?: string; fullName?: string; grade?: number; classSection?: string };
+  reporterSnapshot?: { fullName?: string | null; grade?: number | null; classSection?: string | null };
   isUrgent: boolean;
   attachments?: string[]; // URLs to uploaded files
   status: ReportStatus;

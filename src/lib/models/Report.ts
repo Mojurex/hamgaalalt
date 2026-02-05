@@ -23,10 +23,24 @@ const reportSchema = new Schema(
       type: String,
       required: true,
     },
-    reportedBy: {
+    reporterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      default: null,
+      required: true,
+    },
+    reporterSnapshot: {
+      fullName: {
+        type: String,
+        default: null,
+      },
+      grade: {
+        type: Number,
+        default: null,
+      },
+      classSection: {
+        type: String,
+        default: null,
+      },
     },
     isUrgent: {
       type: Boolean,
@@ -47,6 +61,7 @@ const reportSchema = new Schema(
       ref: 'User',
       default: null,
     },
+    // Legacy field (kept for backward compatibility)
     studentName: {
       type: String,
       default: null,

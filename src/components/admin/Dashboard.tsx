@@ -17,6 +17,8 @@ interface Report {
   isUrgent: boolean;
   attachments?: string[];
   studentName?: string;
+  reporterId?: { _id?: string; fullName?: string; grade?: number; classSection?: string } | string;
+  reporterSnapshot?: { fullName?: string | null; grade?: number | null; classSection?: string | null };
   notes?: string;
 }
 
@@ -66,6 +68,17 @@ const severityLabel = (severity: Report['severity']) => {
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString('mn-MN', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const getReporterInfo = (report: Report) => {
+  const populatedReporter = typeof report.reporterId === 'object' ? report.reporterId : null;
+  const snapshot = report.reporterSnapshot;
+  const fallbackName = report.studentName;
+  const fullName = snapshot?.fullName || populatedReporter?.fullName || fallbackName || 'Тодорхойгүй';
+  const grade = snapshot?.grade ?? populatedReporter?.grade;
+  const classSection = snapshot?.classSection || populatedReporter?.classSection;
+  const classLabel = grade && classSection ? `${grade}${classSection}` : 'Тодорхойгүй';
+  return { fullName, classLabel };
+};
 
 export default function AdminDashboard() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -541,6 +554,8 @@ export default function AdminDashboard() {
                   <thead>
                     <tr className="border-b-2 border-gray-200 text-sm">
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Огноо</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Сурагч</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Анги</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Ангилал</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Эрсдэл</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Төлөв</th>
@@ -555,6 +570,8 @@ export default function AdminDashboard() {
                         className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
                       >
                         <td className="py-4 px-4 text-sm text-gray-600">{formatDate(report.createdAt)}</td>
+                        <td className="py-4 px-4 text-sm text-gray-600">{getReporterInfo(report).fullName}</td>
+                        <td className="py-4 px-4 text-sm text-gray-600">{getReporterInfo(report).classLabel}</td>
                         <td className="py-4 px-4">
                           <span className="text-gray-800 font-medium">
                             {CATEGORY_NAMES[report.category] || report.category}
@@ -589,6 +606,10 @@ export default function AdminDashboard() {
                         {severityLabel(report.severity)}
                       </span>
                     </div>
+                    <div className="text-xs text-gray-500 mb-2">
+                      <p>Сурагч: {getReporterInfo(report).fullName}</p>
+                      <p>Анги: {getReporterInfo(report).classLabel}</p>
+                    </div>
                     <h3 className="text-base font-semibold text-gray-800 mb-1">
                       {CATEGORY_NAMES[report.category] || report.category}
                     </h3>
@@ -614,6 +635,14 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-4">
+              <div className="bg-cyan-50 rounded-lg p-4 border border-cyan-100">
+                <p className="text-sm text-cyan-800 font-semibold mb-2">Сурагчийн мэдээлэл</p>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>Нэр: {getReporterInfo(selectedReport).fullName}</p>
+                  <p>Анги: {getReporterInfo(selectedReport).classLabel}</p>
+                </div>
+              </div>
+
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                 <p className="text-sm text-gray-500 mb-1">Дэлгэрэнгүй</p>
                 <p className="font-semibold text-gray-800 mb-2">
@@ -622,7 +651,6 @@ export default function AdminDashboard() {
                 <p className="text-sm text-gray-600 mb-2">{selectedReport.description}</p>
                 <div className="text-xs text-gray-500 space-y-1">
                   <p>Огноо: {formatDate(selectedReport.createdAt)}</p>
-                  {selectedReport.studentName && <p>Сурагчийн нэр: {selectedReport.studentName}</p>}
                 </div>
               </div>
 

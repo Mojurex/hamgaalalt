@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/connect';
 import { Report } from '@/lib/models/Report';
+import { User } from '@/lib/models/User';
 import { verifyToken, getTokenFromRequest } from '@/lib/auth/jwt';
 import { ApiResponse } from '@/types';
 
@@ -19,12 +20,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (payload.role !== 'student') {
+      return NextResponse.json<ApiResponse>(
+        { success: false, error: 'Only students can create reports' },
+        { status: 403 }
+      );
+    }
+
+    const reporter = await User.findById(payload.userId);
+    if (!reporter) {
+      return NextResponse.json<ApiResponse>(
+        { success: false, error: 'User not found' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
-    const { category, description, isUrgent, attachments, studentName } = body;
+    const { category, description, isUrgent, attachments } = body;
 
     if (!category || !description) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'Category and description are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!reporter.fullName || !reporter.grade || !reporter.classSection) {
+      return NextResponse.json<ApiResponse>(
+        { success: false, error: 'Student profile is incomplete' },
         { status: 400 }
       );
     }
@@ -43,11 +66,15 @@ export async function POST(req: NextRequest) {
       category,
       severity,
       description,
-      reportedBy: payload.userId,
+      reporterId: payload.userId,
+      reporterSnapshot: {
+        fullName: reporter.fullName,
+        grade: reporter.grade,
+        classSection: reporter.classSection,
+      },
       isUrgent: isUrgent === true,
       attachments: attachments || [],
       status: 'new',
-      studentName: studentName || null,
     });
 
     return NextResponse.json<ApiResponse>(
@@ -91,7 +118,9 @@ export async function GET(req: NextRequest) {
     if (status) filter.status = status;
     if (category) filter.category = category;
 
-    const reports = await Report.find(filter).sort({ createdAt: -1 });
+    const reports = await Report.find(filter)
+      .populate('reporterId', 'fullName grade classSection')
+      .sort({ createdAt: -1 });
 
     return NextResponse.json<ApiResponse>(
       {

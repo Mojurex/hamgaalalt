@@ -24,10 +24,16 @@ const userSchema = new Schema(
     },
     grade: {
       type: Number,
+      required() {
+        return this.role === 'student';
+      },
       default: null,
     },
     classSection: {
       type: String,
+      required() {
+        return this.role === 'student';
+      },
       default: null,
     },
     role: {
