@@ -11,7 +11,7 @@ interface LoginProps {
 }
 
 export default function LoginForm({ role }: LoginProps) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -21,13 +21,10 @@ export default function LoginForm({ role }: LoginProps) {
 
   const validate = () => {
     const nextErrors: { email?: string; password?: string } = {};
-    const trimmedEmail = email.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmedUsername = username.trim();
 
-    if (!trimmedEmail) {
-      nextErrors.email = role === 'admin' ? 'Нэвтрэх нэр шаардлагатай' : 'Имэйл шаардлагатай';
-    } else if (role !== 'admin' && !emailRegex.test(trimmedEmail)) {
-      nextErrors.email = 'Имэйл формат буруу байна';
+    if (!trimmedUsername) {
+      nextErrors.email = 'Нэвтрэх нэр шаардлагатай';
     }
 
     if (!password) {
@@ -54,11 +51,11 @@ export default function LoginForm({ role }: LoginProps) {
     try {
       const data = await apiFetch<ApiResponse<{
         token: string;
-        user: { id: string; email: string; name: string; role: string };
+        user: { id: string; username: string; name: string; role: string };
       }>>('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const userRole = data.data?.user?.role;
@@ -118,15 +115,15 @@ export default function LoginForm({ role }: LoginProps) {
             {/* Email Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                {role === 'admin' ? 'Нэвтрэх нэр' : 'Имэйл'}
+                Нэвтрэх нэр
               </label>
               <input
-                type={role === 'admin' ? 'text' : 'email'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 onBlur={validate}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                placeholder={role === 'admin' ? 'admin' : 'example@school.mn'}
+                placeholder="Нэвтрэх нэр"
                 required
               />
               {fieldErrors.email && (

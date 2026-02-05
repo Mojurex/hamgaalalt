@@ -11,18 +11,18 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const { email, password } = body;
+    const { username, password } = body;
 
-    const identifier = String(email || '').trim().toLowerCase();
+    const identifier = String(username || '').trim().toLowerCase();
 
     if (!identifier || !password) {
       return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Email and password are required' },
+        { success: false, error: 'Username and password are required' },
         { status: 400 }
       );
     }
 
-    const user = await User.findOne({ email: identifier });
+    const user = await User.findOne({ username: identifier });
 
     if (!user) {
       return NextResponse.json<ApiResponse>(
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const passwordMatch = await comparePassword(password, user.password);
+    const passwordHash = user.passwordHash || (user as any).password || '';
+    const passwordMatch = await comparePassword(password, passwordHash);
 
     if (!passwordMatch) {
       return NextResponse.json<ApiResponse>(
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     const token = generateToken({
       userId: user._id.toString(),
-      email: user.email,
+      username: user.username,
       role: user.role,
     });
 
@@ -51,10 +52,10 @@ export async function POST(req: NextRequest) {
         success: true,
         data: {
           token,
-          user: {
+      user: {
             id: user._id,
-            email: user.email,
-            name: user.name,
+            username: user.username,
+            name: user.fullName || user.name,
             role: user.role,
           },
         },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/utils/api';
@@ -9,7 +9,6 @@ import type { ApiResponse } from '@/types';
 interface ReportData {
   category: string;
   description: string;
-  isAnonymous: boolean;
   studentName: string;
 }
 
@@ -18,11 +17,24 @@ export default function ParentDashboard() {
   const [reportData, setReportData] = useState<ReportData>({
     category: 'other',
     description: '',
-    isAnonymous: false,
     studentName: '',
   });
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const verify = async () => {
+      try {
+        const res = await apiFetch<ApiResponse<{ role: string }>>('/api/auth/verify');
+        if (res.data?.role !== 'parent') {
+          router.push('/auth/parent');
+        }
+      } catch (error) {
+        router.push('/auth/parent');
+      }
+    };
+    verify();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +58,6 @@ export default function ParentDashboard() {
       setReportData({
         category: 'other',
         description: '',
-        isAnonymous: false,
         studentName: '',
       });
       alert('Мэдээлэл хүлээн авлаа. Баярлалаа!');
@@ -199,25 +210,6 @@ export default function ParentDashboard() {
                       required
                     />
                   </div>
-                </div>
-
-                {/* Anonymous option */}
-                <div className="flex items-center justify-between p-4 bg-cyan-50 rounded-lg border border-cyan-200">
-                  <div>
-                    <label className="font-semibold text-gray-800">Нэрээ нууцалж илгээх</label>
-                    <p className="text-sm text-gray-600">Нэр ил гаргахгүйгээр дамжуулна.</p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={reportData.isAnonymous}
-                    onChange={(e) =>
-                      setReportData((prev) => ({
-                        ...prev,
-                        isAnonymous: e.target.checked,
-                      }))
-                    }
-                    className="w-6 h-6 text-cyan-600 cursor-pointer"
-                  />
                 </div>
 
                 {/* Submit Button */}

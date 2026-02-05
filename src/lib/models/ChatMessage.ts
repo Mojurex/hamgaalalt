@@ -18,7 +18,7 @@ const chatMessageSchema = new Schema(
     },
     senderRole: {
       type: String,
-      enum: ['admin', 'psychologist', 'social_worker', 'student', 'parent'],
+      enum: ['admin', 'student', 'parent'],
       required: true,
     },
     message: {

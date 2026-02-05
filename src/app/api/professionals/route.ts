@@ -10,10 +10,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
-    const professionals = await User.find({
-      role: { $in: ['psychologist', 'social_worker'] },
-      status: 'active',
-    }).select('name email phone availability role');
+    const professionals: any[] = [];
 
     return NextResponse.json<ApiResponse>(
       {
@@ -46,42 +43,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const { email, password, name, role, phone, availability } = body;
-
-    if (!email || !password || !name || !role) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Required fields missing' },
-        { status: 400 }
-      );
-    }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: 'User already exists' },
-        { status: 409 }
-      );
-    }
-
-    const hashedPassword = await hashPassword(password);
-
-    const professional = await User.create({
-      email,
-      password: hashedPassword,
-      name,
-      role,
-      phone,
-      availability,
-      status: 'active',
-    });
-
     return NextResponse.json<ApiResponse>(
-      {
-        success: true,
-        data: professional,
-      },
-      { status: 201 }
+      { success: false, error: 'Professionals are not supported in this setup' },
+      { status: 400 }
     );
   } catch (error) {
     console.error('Professional creation error:', error);

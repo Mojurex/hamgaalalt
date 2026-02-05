@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/utils/api';
 import type { ApiResponse } from '@/types';
 
@@ -69,7 +70,6 @@ interface ReportData {
   category: string;
   severity: string;
   description: string;
-  isAnonymous: boolean;
   isUrgent: boolean;
   attachments: string[];
 }
@@ -82,12 +82,12 @@ export default function StudentDashboard() {
     category: '',
     severity: 'medium',
     description: '',
-    isAnonymous: true,
     isUrgent: false,
     attachments: [],
   });
   const [loading, setLoading] = useState(false);
   const maxDescriptionLength = 500;
+  const router = useRouter();
 
   const steps = [
     { id: 'home', label: 'Юу болсон бэ?' },
@@ -96,6 +96,20 @@ export default function StudentDashboard() {
   ];
 
   const currentStepIndex = step === 'home' ? 0 : step === 'form' ? 1 : 2;
+
+  useEffect(() => {
+    const verify = async () => {
+      try {
+        const res = await apiFetch<ApiResponse<{ role: string }>>('/api/auth/verify');
+        if (res.data?.role !== 'student') {
+          router.push('/auth/student');
+        }
+      } catch (error) {
+        router.push('/auth/student');
+      }
+    };
+    verify();
+  }, [router]);
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
@@ -138,7 +152,6 @@ export default function StudentDashboard() {
           category: '',
           severity: 'medium',
           description: '',
-          isAnonymous: true,
           isUrgent: false,
           attachments: [],
         });
@@ -165,7 +178,7 @@ export default function StudentDashboard() {
             <h1 className="text-3xl font-bold text-gray-800">Сурагчийн портал</h1>
           </div>
           <span className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border border-cyan-100">
-            Нууцлалтай ашиглалт
+            Нэвтэрсэн хэрэглэгч
           </span>
         </div>
 
@@ -215,7 +228,7 @@ export default function StudentDashboard() {
                 Та ямар нэг асуудалтай тулгарч байвал доорх сонголтуудаас сонгоно уу.
               </p>
               <p className="text-sm text-gray-500">
-                Нэр, хувийн мэдээлэл шаардахгүй. Нууцлалтай ашиглах боломжтой.
+                Тайлан илгээхэд нэвтэрсэн байх шаардлагатай.
               </p>
             </div>
 
@@ -301,34 +314,6 @@ export default function StudentDashboard() {
               </div>
 
               <form className="space-y-6">
-                <div className="border border-gray-100 rounded-xl p-4 space-y-4">
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">Үндсэн мэдээлэл</p>
-                    <p className="text-xs text-gray-500">Хувийн мэдээллийг хамгийн бага байлгая.</p>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-cyan-50 rounded-lg border border-cyan-200">
-                    <div>
-                      <label className="font-semibold text-gray-800">
-                        Нэрээ нууцалж илгээх
-                      </label>
-                      <p className="text-sm text-gray-600">
-                        Нэр, хувийн мэдээлэл нийтэд харагдахгүй.
-                      </p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={reportData.isAnonymous}
-                      onChange={(e) =>
-                        setReportData((prev) => ({
-                          ...prev,
-                          isAnonymous: e.target.checked,
-                        }))
-                      }
-                      className="w-6 h-6 text-cyan-600 cursor-pointer"
-                    />
-                  </div>
-                </div>
 
                 <div className="border border-gray-100 rounded-xl p-4 space-y-4">
                   <div>

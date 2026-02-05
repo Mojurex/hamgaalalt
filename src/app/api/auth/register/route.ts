@@ -10,25 +10,18 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const { email, password, name, role } = body;
+    const { username, password, role, fullName, grade, classSection, phone, childName } = body;
 
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-    const normalizedName = String(name || '').trim();
+    const normalizedUsername = String(username || '').trim().toLowerCase();
+    const normalizedName = String(fullName || '').trim();
     const normalizedRole = String(role || '').trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const normalizedClassSection = String(classSection || '').trim();
     const allowedRoles = ['student', 'parent'];
 
     // Validation
-    if (!normalizedEmail || !password || !normalizedName || !normalizedRole) {
+    if (!normalizedUsername || !password || !normalizedName || !normalizedRole) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'All fields are required' },
-        { status: 400 }
-      );
-    }
-
-    if (!emailRegex.test(normalizedEmail)) {
-      return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Invalid email format' },
         { status: 400 }
       );
     }
@@ -47,8 +40,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (normalizedRole === 'student') {
+      const numericGrade = Number(grade);
+      if (!numericGrade || numericGrade < 1 || numericGrade > 12) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: 'Invalid grade' },
+          { status: 400 }
+        );
+      }
+      if (!normalizedClassSection) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: 'Class section is required' },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (normalizedRole === 'parent') {
+      if (!normalizedClassSection) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: 'Child class is required' },
+          { status: 400 }
+        );
+      }
+      if (!String(phone || '').trim()) {
+        return NextResponse.json<ApiResponse>(
+          { success: false, error: 'Phone is required' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    const existingUser = await User.findOne({ username: normalizedUsername });
     if (existingUser) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'User already exists' },
@@ -61,10 +85,14 @@ export async function POST(req: NextRequest) {
 
     // Create user
     const newUser = await User.create({
-      email: normalizedEmail,
-      password: hashedPassword,
-      name: normalizedName,
+      username: normalizedUsername,
+      passwordHash: hashedPassword,
+      fullName: normalizedName,
       role: normalizedRole,
+      grade: normalizedRole === 'student' ? Number(grade) : null,
+      classSection: normalizedClassSection || null,
+      phone: phone || null,
+      childName: childName || null,
       status: 'active',
     });
 
@@ -73,8 +101,8 @@ export async function POST(req: NextRequest) {
         success: true,
         data: {
           id: newUser._id,
-          email: newUser.email,
-          name: newUser.name,
+          username: newUser.username,
+          name: newUser.fullName,
           role: newUser.role,
         },
       },

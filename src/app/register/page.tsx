@@ -6,7 +6,9 @@ export default function RegisterPage({ searchParams }: { searchParams: { role?: 
     redirect('/admin/login');
   }
 
-  const defaultRole = searchParams.role === 'parent' ? 'parent' : 'student';
-  const lockRole = searchParams.role === 'parent' || searchParams.role === 'student';
-  return <RegisterForm defaultRole={defaultRole} lockRole={lockRole} />;
+  if (searchParams.role === 'parent') {
+    redirect('/auth/parent');
+  }
+
+  redirect('/auth/student');
 }

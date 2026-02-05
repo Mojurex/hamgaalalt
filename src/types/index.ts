@@ -1,5 +1,5 @@
 // User roles
-export type UserRole = 'admin' | 'psychologist' | 'social_worker' | 'student' | 'parent';
+export type UserRole = 'admin' | 'student' | 'parent';
 
 // Report severity levels
 export type SeverityLevel = 'high' | 'medium' | 'low'; // RED, YELLOW, GREEN
@@ -19,13 +19,14 @@ export type ReportCategory =
 // User interface
 export interface User {
   _id?: string;
-  email: string;
-  password: string;
-  name: string;
   role: UserRole;
-  phone?: string;
-  availability?: string[];
-  status?: 'active' | 'inactive';
+  fullName: string;
+  grade?: number | null;
+  classSection?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  username: string;
+  passwordHash?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -36,8 +37,7 @@ export interface Report {
   category: ReportCategory;
   severity: SeverityLevel;
   description: string;
-  isAnonymous: boolean;
-  reportedBy?: string; // User ID (null if anonymous)
+  reportedBy?: string;
   isUrgent: boolean;
   attachments?: string[]; // URLs to uploaded files
   status: ReportStatus;
@@ -74,7 +74,7 @@ export interface ChatSession {
 // JWT Payload
 export interface JWTPayload {
   userId: string;
-  email: string;
+  username: string;
   role: UserRole;
   iat?: number;
   exp?: number;

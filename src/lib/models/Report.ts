@@ -23,10 +23,6 @@ const reportSchema = new Schema(
       type: String,
       required: true,
     },
-    isAnonymous: {
-      type: Boolean,
-      default: true,
-    },
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

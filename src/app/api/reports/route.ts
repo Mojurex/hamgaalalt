@@ -12,8 +12,15 @@ export async function POST(req: NextRequest) {
     const token = getTokenFromRequest(req);
     const payload = token ? verifyToken(token) : null;
 
+    if (!payload) {
+      return NextResponse.json<ApiResponse>(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
-    const { category, description, isAnonymous, isUrgent, attachments, studentName } = body;
+    const { category, description, isUrgent, attachments, studentName } = body;
 
     if (!category || !description) {
       return NextResponse.json<ApiResponse>(
@@ -36,8 +43,7 @@ export async function POST(req: NextRequest) {
       category,
       severity,
       description,
-      isAnonymous: isAnonymous !== false,
-      reportedBy: payload?.userId || null,
+      reportedBy: payload.userId,
       isUrgent: isUrgent === true,
       attachments: attachments || [],
       status: 'new',

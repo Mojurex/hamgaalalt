@@ -11,7 +11,6 @@ interface Report {
   category: string;
   severity: 'high' | 'medium' | 'low';
   description: string;
-  isAnonymous: boolean;
   status: string;
   assignedTo: string | null;
   createdAt: string;
@@ -623,7 +622,6 @@ export default function AdminDashboard() {
                 <p className="text-sm text-gray-600 mb-2">{selectedReport.description}</p>
                 <div className="text-xs text-gray-500 space-y-1">
                   <p>Огноо: {formatDate(selectedReport.createdAt)}</p>
-                  <p>Нууцлал: {selectedReport.isAnonymous ? 'Тийм' : 'Үгүй'}</p>
                   {selectedReport.studentName && <p>Сурагчийн нэр: {selectedReport.studentName}</p>}
                 </div>
               </div>

@@ -37,20 +37,15 @@ export default function Home() {
                 Нууц мэдээлэх боломжтой. Аюулгүй байдлыг нэн тэргүүнд тавина.
               </p>
               <div className="space-y-2">
-                <Link href="/student/dashboard">
+                <Link href="/auth/student">
                   <button className="w-full bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white font-bold py-3 px-4 rounded-xl transition-all">
-                    Нэргүйгээр үргэлжлүүлэх
-                  </button>
-                </Link>
-                <Link href="/student/login">
-                  <button className="w-full border border-cyan-200 text-cyan-700 font-semibold py-2 px-4 rounded-xl hover:bg-cyan-50 transition-all">
-                    Нэвтрэх
+                    Нэвтрэх / Бүртгүүлэх
                   </button>
                 </Link>
               </div>
             </div>
 
-            <Link href="/parent/login" className="group">
+            <Link href="/auth/parent" className="group">
               <div className="h-full bg-white rounded-2xl shadow-lg border border-cyan-100 p-6 transition-all hover:shadow-xl">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">👨‍👩‍👧</span>
@@ -79,8 +74,8 @@ export default function Home() {
           {/* Privacy + Safety Reminder */}
           <div className="mt-10 p-6 bg-white rounded-xl shadow-md border border-cyan-100">
             <p className="text-sm text-gray-600 text-center">
-              🔒 Хувийн мэдээллийг багасгаж, зөвхөн шаардлагатай мэдээллийг л авдаг.
-              Хэрэв яаралтай аюул тулгарсан бол хамгийн ойрын насанд хүрэгчид болон
+              🔒 Хувийн мэдээллийг зөвхөн шаардлагатай хэмжээнд авна.
+              Яаралтай аюул тулгарсан бол хамгийн ойрын насанд хүрэгчид болон
               онцгой байдлын дугаарт хандана уу.
             </p>
           </div>
