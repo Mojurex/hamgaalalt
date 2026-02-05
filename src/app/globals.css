@@ -34,7 +34,7 @@ select {
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af;
+  color: #0a0a0a;
   opacity: 1;
 }
 
