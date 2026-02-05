@@ -89,7 +89,7 @@ export default function ParentDashboard() {
             }}
             className="text-gray-600 hover:text-gray-800 font-semibold"
           >
-            Гаралт
+            Гарах
           </button>
         </div>
 

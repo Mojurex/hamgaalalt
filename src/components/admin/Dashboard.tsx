@@ -273,7 +273,7 @@ export default function AdminDashboard() {
               onClick={handleLogout}
               className="w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-all"
             >
-              Гаралт
+              Гарах
             </button>
           </div>
         </div>
