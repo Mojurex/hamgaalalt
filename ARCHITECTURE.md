@@ -449,7 +449,7 @@ Local Machine
 ### Production
 
 ```
-Deployment Platform (Vercel/Heroku/AWS)
+Deployment Platform (Netlify)
   │
   ├─→ Next.js Production Build
   │    ├─→ Compiled to optimized code

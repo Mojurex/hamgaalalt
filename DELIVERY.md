@@ -399,10 +399,10 @@ All navigation, forms, and charts responsive.
 
 ## 🚀 Deployment Instructions
 
-### Vercel (Recommended)
+### Netlify (Recommended)
 
 1. Push to GitHub
-2. Connect repo to Vercel
+2. Connect repo to Netlify
 3. Add environment variables:
    - MONGODB_URI
    - JWT_SECRET

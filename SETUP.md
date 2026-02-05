@@ -195,7 +195,7 @@ MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/school-support
 ```
 
 ### Enable HTTPS
-- Deploy to hosting service (Vercel, Heroku, AWS, etc.)
+- Deploy to hosting service (Netlify)
 - Use environment-specific `.env.production.local`
 
 ### Rate Limiting (To be implemented)
@@ -301,7 +301,7 @@ After setup, verify:
 
 1. **Customize Demo Data**: Edit `scripts/init-db.js` to add your professionals
 2. **Brand the App**: Change colors in Tailwind config
-3. **Deploy**: Push to GitHub and deploy to Vercel/Heroku
+3. **Deploy**: Push to GitHub and deploy to Netlify
 4. **Add Features**: Email notifications, SMS alerts, etc.
 5. **Security**: Conduct security audit, set up monitoring
 
@@ -318,8 +318,8 @@ A: Edit `scripts/init-db.js` and re-run `npm run init-db`, or use the admin dash
 **Q: How do I change the theme colors?**  
 A: Edit `tailwind.config.ts` and the color variables in components.
 
-**Q: Can I deploy to Vercel?**  
-A: Yes! Connect your GitHub repo to Vercel and set environment variables in project settings.
+**Q: Can I deploy to Netlify?**  
+A: Yes! Connect your GitHub repo to Netlify and set environment variables in site settings.
 
 **Q: Is the data encrypted?**  
 A: Passwords are hashed with bcryptjs. Add TLS/SSL in production for data in transit.
