@@ -41,7 +41,7 @@ textarea::placeholder {
 input:disabled,
 textarea:disabled,
 select:disabled {
-  color: #9ca3af;
+  color: #0a0a0a;
 }
 
 input:-webkit-autofill,
