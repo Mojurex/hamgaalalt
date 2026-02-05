@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/utils/api';
+import FormError from '@/components/ui/FormError';
+import FormSuccess from '@/components/ui/FormSuccess';
 import type { ApiResponse } from '@/types';
 
 export default function StudentAuthPage() {
@@ -13,13 +15,14 @@ export default function StudentAuthPage() {
 
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [grade, setGrade] = useState('');
   const [classSection, setClassSection] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const resetMessages = () => {
     setError('');
@@ -29,6 +32,12 @@ export default function StudentAuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     resetMessages();
+
+    if (!loginUsername.trim() || !loginPassword) {
+      setError('Нэвтрэх нэр болон нууц үгээ оруулна уу.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -75,7 +84,6 @@ export default function StudentAuthPage() {
           classSection,
           username,
           password,
-          phone: phone || undefined,
         }),
       });
 
@@ -124,16 +132,8 @@ export default function StudentAuthPage() {
             </button>
           </div>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-              {success}
-            </div>
-          )}
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
           {tab === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-4">
@@ -143,20 +143,29 @@ export default function StudentAuthPage() {
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Нэвтрэх нэр"
+                  placeholder="Жишээ: student01"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Нууц үг</label>
-                <input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((prev) => !prev)}
+                    className="absolute right-3 top-3 text-xs text-gray-500"
+                  >
+                    {showLoginPassword ? 'Нуух' : 'Харах'}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
@@ -169,13 +178,14 @@ export default function StudentAuthPage() {
             </form>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
+              <p className="text-xs text-gray-500">Бүртгүүлснээр тайлангаа хянах боломжтой.</p>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Овог нэр</label>
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Овог нэр"
+                  placeholder="Бат-Эрдэнэ"
                   required
                 />
               </div>
@@ -211,29 +221,29 @@ export default function StudentAuthPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Нэвтрэх нэр"
+                  placeholder="student01"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Нууц үг</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Утас (сонголттой)</label>
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="99112233"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="Хамгийн багадаа 6 тэмдэгт"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-3 text-xs text-gray-500"
+                  >
+                    {showPassword ? 'Нуух' : 'Харах'}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"

@@ -28,7 +28,7 @@ body {
 input,
 textarea,
 select {
-  color: #111111;
+  color: #000000 !important;
   background-color: #ffffff;
 }
 

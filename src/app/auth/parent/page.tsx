@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/utils/api';
+import FormError from '@/components/ui/FormError';
+import FormSuccess from '@/components/ui/FormSuccess';
 import type { ApiResponse } from '@/types';
 
 export default function ParentAuthPage() {
@@ -13,13 +15,14 @@ export default function ParentAuthPage() {
 
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [childName, setChildName] = useState('');
+  const [childGrade, setChildGrade] = useState('');
   const [childClass, setChildClass] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const resetMessages = () => {
     setError('');
@@ -29,6 +32,12 @@ export default function ParentAuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     resetMessages();
+
+    if (!loginUsername.trim() || !loginPassword) {
+      setError('Нэвтрэх нэр болон нууц үгээ оруулна уу.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -53,7 +62,7 @@ export default function ParentAuthPage() {
     e.preventDefault();
     resetMessages();
 
-    if (!fullName.trim() || !phone.trim() || !childClass.trim() || !username.trim() || !password) {
+    if (!fullName.trim() || !phone.trim() || !childGrade || !childClass.trim() || !password) {
       setError('Бүх шаардлагатай талбарыг бөглөнө үү.');
       return;
     }
@@ -71,21 +80,20 @@ export default function ParentAuthPage() {
         body: JSON.stringify({
           role: 'parent',
           fullName,
-          classSection: childClass,
-          username,
-          password,
           phone,
-          childName: childName || undefined,
+          childGrade: Number(childGrade),
+          classSection: childClass,
+          password,
         }),
       });
 
       setSuccess('Бүртгэл амжилттай. Нэвтрэх таб руу шилжинэ...');
       setTab('login');
-      setLoginUsername(username);
+      setLoginUsername(phone);
       setLoginPassword('');
     } catch (err) {
       const raw = err instanceof Error ? err.message : 'Бүртгэл амжилтгүй.';
-      const message = raw.toLowerCase().includes('exists') ? 'Энэ хэрэглэгчийн нэр бүртгэлтэй байна.' : raw;
+      const message = raw.toLowerCase().includes('exists') ? 'Энэ утас бүртгэлтэй байна.' : raw;
       setError(message);
     } finally {
       setLoading(false);
@@ -124,39 +132,40 @@ export default function ParentAuthPage() {
             </button>
           </div>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
-              {success}
-            </div>
-          )}
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
           {tab === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Нэвтрэх нэр</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Нэвтрэх нэр (утас)</label>
                 <input
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Нэвтрэх нэр"
+                  placeholder="99112233"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Нууц үг</label>
-                <input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((prev) => !prev)}
+                    className="absolute right-3 top-3 text-xs text-gray-500"
+                  >
+                    {showLoginPassword ? 'Нуух' : 'Харах'}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
@@ -169,13 +178,14 @@ export default function ParentAuthPage() {
             </form>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
+              <p className="text-xs text-gray-500">Эцэг эхийн мэдээлэл зөвхөн тусламжийн зорилгоор ашиглагдана.</p>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Овог нэр</label>
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Овог нэр"
+                  placeholder="Бат-Эрдэнэ"
                   required
                 />
               </div>
@@ -189,45 +199,51 @@ export default function ParentAuthPage() {
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Хүүхдийн нэр (сонголттой)</label>
-                <input
-                  value={childName}
-                  onChange={(e) => setChildName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Хүүхдийн нэр"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Хүүхдийн анги/бүлэг</label>
-                <input
-                  value={childClass}
-                  onChange={(e) => setChildClass(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="5A"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Нэвтрэх нэр</label>
-                <input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Нэвтрэх нэр"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Хүүхдийн анги</label>
+                  <select
+                    value={childGrade}
+                    onChange={(e) => setChildGrade(e.target.value)}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
+                  >
+                    <option value="">Сонгох</option>
+                    {Array.from({ length: 12 }).map((_, idx) => (
+                      <option key={idx + 1} value={idx + 1}>{idx + 1}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Хүүхдийн бүлэг</label>
+                  <input
+                    value={childClass}
+                    onChange={(e) => setChildClass(e.target.value)}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="5A"
+                    required
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Нууц үг</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="••••••"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    placeholder="Хамгийн багадаа 6 тэмдэгт"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-3 text-xs text-gray-500"
+                  >
+                    {showPassword ? 'Нуух' : 'Харах'}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"
