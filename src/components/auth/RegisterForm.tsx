@@ -10,9 +10,10 @@ type RoleOption = 'student' | 'parent';
 
 interface RegisterFormProps {
   defaultRole?: RoleOption;
+  lockRole?: boolean;
 }
 
-export default function RegisterForm({ defaultRole = 'student' }: RegisterFormProps) {
+export default function RegisterForm({ defaultRole = 'student', lockRole = false }: RegisterFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,8 +46,8 @@ export default function RegisterForm({ defaultRole = 'student' }: RegisterFormPr
 
     if (!password) {
       nextErrors.password = 'Нууц үг шаардлагатай';
-    } else if (password.length < 8) {
-      nextErrors.password = 'Нууц үг хамгийн багадаа 8 тэмдэгт байна';
+    } else if (password.length < 6) {
+      nextErrors.password = 'Нууц үг хамгийн багадаа 6 тэмдэгт байна';
     }
 
     setFieldErrors(nextErrors);
@@ -85,7 +86,10 @@ export default function RegisterForm({ defaultRole = 'student' }: RegisterFormPr
         }, 800);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Бүртгэл амжилтгүй. Дахин оролдоно уу.';
+      const raw = err instanceof Error ? err.message : 'Бүртгэл амжилтгүй. Дахин оролдоно уу.';
+      const message = raw.toLowerCase().includes('exists')
+        ? 'Энэ имэйл бүртгэлтэй байна.'
+        : raw;
       setError(message);
     } finally {
       setLoading(false);
@@ -138,7 +142,7 @@ export default function RegisterForm({ defaultRole = 'student' }: RegisterFormPr
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Имэйл хаяг
+                Имэйл
               </label>
               <input
                 type="email"
@@ -165,7 +169,7 @@ export default function RegisterForm({ defaultRole = 'student' }: RegisterFormPr
                 onBlur={validate}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 placeholder="••••••••"
-                minLength={8}
+                minLength={6}
                 required
               />
               {fieldErrors.password && (
@@ -173,19 +177,21 @@ export default function RegisterForm({ defaultRole = 'student' }: RegisterFormPr
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Бүртгэлийн төрөл
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as RoleOption)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              >
-                <option value="student">Сурагч</option>
-                <option value="parent">Эцэг эх</option>
-              </select>
-            </div>
+            {!lockRole && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Бүртгэлийн төрөл
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as RoleOption)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                >
+                  <option value="student">Сурагч</option>
+                  <option value="parent">Эцэг эх</option>
+                </select>
+              </div>
+            )}
 
             <button
               type="submit"

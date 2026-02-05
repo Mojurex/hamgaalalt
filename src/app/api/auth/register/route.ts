@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (String(password).length < 8) {
+    if (String(password).length < 6) {
       return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Password must be at least 8 characters' },
+        { success: false, error: 'Password must be at least 6 characters' },
         { status: 400 }
       );
     }

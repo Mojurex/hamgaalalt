@@ -1,5 +1,17 @@
 export const DEBUG_MODE = process.env.NEXT_PUBLIC_DEBUG === 'true';
 
+function dispatchToast(message: string, type: 'error' | 'success' = 'error') {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent('app-toast', {
+      detail: { message, type },
+    })
+  );
+}
+
 export interface ApiError extends Error {
   status?: number;
   data?: unknown;
@@ -47,9 +59,7 @@ export async function apiFetch<T = any>(
         payload,
       });
 
-      if (DEBUG_MODE && typeof window !== 'undefined') {
-        window.alert(message);
-      }
+      dispatchToast(message, 'error');
 
       const err = new Error(message) as ApiError;
       err.status = response.status;
@@ -61,10 +71,8 @@ export async function apiFetch<T = any>(
   } catch (error) {
     console.error('Network/API error:', error);
 
-    if (DEBUG_MODE && typeof window !== 'undefined') {
-      const message = error instanceof Error ? error.message : 'Network error';
-      window.alert(message);
-    }
+    const message = error instanceof Error ? error.message : 'Network error';
+    dispatchToast(message, 'error');
 
     throw error;
   }

@@ -28,21 +28,27 @@ export default function Home() {
 
           {/* Entry Points */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Link href="/student/login" className="group">
-              <div className="h-full bg-white rounded-2xl shadow-lg border border-cyan-100 p-6 transition-all hover:shadow-xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">🎓</span>
-                  <h2 className="text-2xl font-bold text-gray-800">Сурагч</h2>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Нууц мэдээлэх боломжтой. Аюулгүй байдлыг нэн тэргүүнд тавина.
-                </p>
-                <div className="inline-flex items-center gap-2 text-cyan-700 font-semibold">
-                  Нэвтрэх
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
+            <div className="h-full bg-white rounded-2xl shadow-lg border border-cyan-100 p-6 transition-all hover:shadow-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">🎓</span>
+                <h2 className="text-2xl font-bold text-gray-800">Сурагч</h2>
               </div>
-            </Link>
+              <p className="text-gray-600 mb-4">
+                Нууц мэдээлэх боломжтой. Аюулгүй байдлыг нэн тэргүүнд тавина.
+              </p>
+              <div className="space-y-2">
+                <Link href="/student/dashboard">
+                  <button className="w-full bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white font-bold py-3 px-4 rounded-xl transition-all">
+                    Нэргүйгээр үргэлжлүүлэх
+                  </button>
+                </Link>
+                <Link href="/student/login">
+                  <button className="w-full border border-cyan-200 text-cyan-700 font-semibold py-2 px-4 rounded-xl hover:bg-cyan-50 transition-all">
+                    Нэвтрэх
+                  </button>
+                </Link>
+              </div>
+            </div>
 
             <Link href="/parent/login" className="group">
               <div className="h-full bg-white rounded-2xl shadow-lg border border-cyan-100 p-6 transition-all hover:shadow-xl">

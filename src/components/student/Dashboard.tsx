@@ -90,9 +90,9 @@ export default function StudentDashboard() {
   const maxDescriptionLength = 500;
 
   const steps = [
-    { id: 'home', label: 'Юу тохиолдсон бэ?' },
-    { id: 'form', label: 'Зөвлөмж ба үйлдлүүд' },
-    { id: 'advice', label: 'Баталгаажуулалт' },
+    { id: 'home', label: 'Юу болсон бэ?' },
+    { id: 'form', label: 'Дэлгэрэнгүй' },
+    { id: 'advice', label: 'Зөвлөмж/Мэдээлэх/Цаг/Чат' },
   ];
 
   const currentStepIndex = step === 'home' ? 0 : step === 'form' ? 1 : 2;
@@ -209,7 +209,7 @@ export default function StudentDashboard() {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Юу тохиолдсон бэ?
+                Юу болсон бэ?
               </h2>
               <p className="text-gray-600 mb-6">
                 Та ямар нэг асуудалтай тулгарч байвал доорх сонголтуудаас сонгоно уу.

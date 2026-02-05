@@ -22,19 +22,18 @@ export default function LoginForm({ role }: LoginProps) {
   const validate = () => {
     const nextErrors: { email?: string; password?: string } = {};
     const trimmedEmail = email.trim();
-    const isEmailLike = trimmedEmail.includes('@');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!trimmedEmail) {
-      nextErrors.email = 'Нэвтрэх нэр эсвэл имэйл шаардлагатай';
-    } else if (isEmailLike && !emailRegex.test(trimmedEmail)) {
+      nextErrors.email = role === 'admin' ? 'Нэвтрэх нэр шаардлагатай' : 'Имэйл шаардлагатай';
+    } else if (role !== 'admin' && !emailRegex.test(trimmedEmail)) {
       nextErrors.email = 'Имэйл формат буруу байна';
     }
 
     if (!password) {
       nextErrors.password = 'Нууц үг шаардлагатай';
-    } else if (password.length < 8) {
-      nextErrors.password = 'Нууц үг хамгийн багадаа 8 тэмдэгт байна';
+    } else if (password.length < 6) {
+      nextErrors.password = 'Нууц үг хамгийн багадаа 6 тэмдэгт байна';
     }
 
     setFieldErrors(nextErrors);
@@ -76,7 +75,7 @@ export default function LoginForm({ role }: LoginProps) {
         }
       }, 400);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'An error occurred. Please try again.';
+      const message = err instanceof Error ? err.message : 'Нэвтрэхэд алдаа гарлаа.';
       setError(message);
       setLoading(false);
     }
@@ -119,15 +118,15 @@ export default function LoginForm({ role }: LoginProps) {
             {/* Email Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Имэйл / Нэвтрэх нэр
+                {role === 'admin' ? 'Нэвтрэх нэр' : 'Имэйл'}
               </label>
               <input
-                type="text"
+                type={role === 'admin' ? 'text' : 'email'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={validate}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                placeholder="admin эсвэл example@school.mn"
+                placeholder={role === 'admin' ? 'admin' : 'example@school.mn'}
                 required
               />
               {fieldErrors.email && (
@@ -168,14 +167,16 @@ export default function LoginForm({ role }: LoginProps) {
           </form>
 
           {/* Sign up link */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
-              Шинэ бүртгэлтэй юу?{' '}
-              <Link href={`/register?role=${role}`} className="text-cyan-600 hover:text-cyan-700 font-semibold">
-                Бүртгүүлэх
-              </Link>
-            </p>
-          </div>
+          {role !== 'admin' && (
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 text-sm">
+                Шинэ бүртгэлтэй юу?{' '}
+                <Link href={`/register?role=${role}`} className="text-cyan-600 hover:text-cyan-700 font-semibold">
+                  Бүртгүүлэх
+                </Link>
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Demo credentials */}
