@@ -76,7 +76,7 @@ Netlify serverless орчинд local MongoDB (`localhost:27017`) ажиллах
 
    ```bash
    # MongoDB Connection (ATLAS холболт ашиглах!)
-   MONGODB_URI=mongodb+srv://school_admin:YOUR_PASSWORD@school-support-cluster.xxxxx.mongodb.net/school-support-system?retryWrites=true&w=majority
+   MONGODB_URI=mongodb://localhost:27017/school-support-system
 
    # JWT Secret (хүчтэй нууц түлхүүр)
    JWT_SECRET=netlify-production-super-secret-key-change-this-2026
