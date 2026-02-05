@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { ensureAdminSeed } from '@/lib/db/seed';
 
-const DEFAULT_DB_NAME = process.env.MONGODB_DB_NAME || 'school-support-system';
+const DEFAULT_DB_NAME = process.env.MONGODB_DB_NAME || 'school_support';
 
 interface CachedConnection {
   conn: typeof mongoose | null;
@@ -30,7 +30,9 @@ export async function connectDB() {
   const MONGODB_URI = process.env.MONGODB_URI;
 
   if (!MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env');
+    const message = 'Please define the MONGODB_URI environment variable (missing in process.env).';
+    console.error(message);
+    throw new Error(message);
   }
 
   if (cached.conn) {

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 import { apiFetch } from '@/lib/utils/api';
-import type { ApiResponse } from '@/types';
 
 export default function AdminLoginPage() {
   const [status, setStatus] = useState<'ok' | 'error' | 'loading'>('loading');
@@ -12,10 +11,10 @@ export default function AdminLoginPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await apiFetch<ApiResponse<{ mongoConnected: boolean; dbName: string | null }>>('/api/health');
-        if (res.data?.mongoConnected) {
+        const res = await apiFetch<{ ok: boolean; mongo: string; dbName?: string | null }>('/api/health');
+        if (res.ok) {
           setStatus('ok');
-          setDbName(res.data.dbName || null);
+          setDbName(res.dbName || null);
         } else {
           setStatus('error');
         }

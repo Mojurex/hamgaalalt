@@ -5,6 +5,8 @@ import { generateToken } from '@/lib/auth/jwt';
 import { comparePassword } from '@/lib/auth/password';
 import { ApiResponse } from '@/types';
 
+export const runtime = 'nodejs';
+
 // POST /api/auth/login
 export async function POST(req: NextRequest) {
   try {
@@ -13,20 +15,23 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { username, password } = body;
 
-    const identifier = String(username || '').trim().toLowerCase();
+    const identifier = String(username || '').trim();
 
     if (!identifier || !password) {
       return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Username and password are required' },
+        { success: false, error: 'Username/email and password are required' },
         { status: 400 }
       );
     }
 
-    const user = await User.findOne({ username: identifier });
+    const normalized = identifier.toLowerCase();
+    const user = await User.findOne({
+      $or: [{ username: normalized }, { email: normalized }],
+    });
 
     if (!user) {
       return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Invalid email or password' },
+        { success: false, error: 'Invalid username/email or password' },
         { status: 401 }
       );
     }
@@ -36,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     if (!passwordMatch) {
       return NextResponse.json<ApiResponse>(
-        { success: false, error: 'Invalid email or password' },
+        { success: false, error: 'Invalid username/email or password' },
         { status: 401 }
       );
     }
