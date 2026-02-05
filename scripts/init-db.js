@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 
+// Load .env.local for local development, fallback to .env
+dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 const MONGODB_URI = process.env.MONGODB_URI;
